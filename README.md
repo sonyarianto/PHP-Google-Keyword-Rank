@@ -1,7 +1,6 @@
 # PHP Google Keyword Rank
 
-Google Keyword Rank
-Simple script to get rank of your domain against defined keyword phrase
+Simple script to get rank of your domain against defined keyword phrase.
 
 Usage:
 ~~~
