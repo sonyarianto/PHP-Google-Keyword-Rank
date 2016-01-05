@@ -32,7 +32,7 @@
 		$googleQueryString = "https://www." . $argv[1] . "/search?q=" . urlencode($keywordPhrase) . "&start=" . $startPage;
 
 		// go to google
-	  $curl = curl_init();
+		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $googleQueryString);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl, CURLOPT_ENCODING, "");
@@ -46,46 +46,47 @@
 
 		curl_close($curl);
 
-	  $xmlDoc = new DOMDocument();
-	  @$xmlDoc->loadHTML($curlData);
+		$xmlDoc = new DOMDocument();
+		@$xmlDoc->loadHTML($curlData);
+		
+		$xPathDoc = new DOMXpath($xmlDoc);
+		
+		$xPathQuery = $xPathDoc->query("//li[@class='g']");
+		
+		if($xPathQuery->length == 0) {
+			$isEntryFound = false;
+		} else {
+			$isEntryFound = true;
+		}
 
-	  $xPathDoc = new DOMXpath($xmlDoc);
-
-	  $xPathQuery = $xPathDoc->query("//li[@class='g']");
-
-	  if($xPathQuery->length == 0) {
-	    $isEntryFound = false;
-	  } else {
-	   	$isEntryFound = true;
-	  }
-
-	  if($isEntryFound) {
-	  	$iCounter = 0;
+		if($isEntryFound) {
+			$iCounter = 0;
 	  		
-	    foreach($xPathQuery as $eachXpathElement) {
-	    	$url 	= trim($eachXpathElement->getElementsByTagName('a')->item(0)->getAttribute('href'));
-	    	$title 	= trim($eachXpathElement->getElementsByTagName('a')->item(0)->nodeValue);
+			foreach($xPathQuery as $eachXpathElement) {
+				$url 	= trim($eachXpathElement->getElementsByTagName('a')->item(0)->getAttribute('href'));
+				// OPTIONAL
+				//$title 	= trim($eachXpathElement->getElementsByTagName('a')->item(0)->nodeValue);
 
-	    	if(substr($url, 0, 7) != '/url?q=') {
-	    		continue;
-	    	}
+				if(substr($url, 0, 7) != '/url?q=') {
+					continue;
+				}
 
-	    	$iCounter++;
-
-	    	$url = trim(str_replace('/url?q=', '', $url));
-	    	$url = substr($url, 0, strpos($url, '&sa=U&ved='));
-
-	    	// DEBUG
-	    	//echo $googleListRank . ' ' . $googlePage . ' ' . $startPage . ' ' . $iCounter . ' ' .$url . "\n";
-	    		
-	    	$pos = strpos($url, $argv[2]);
-
-	    	if(!($pos === false)) {
-	    		echo 'Domain: ' . $argv[2] . ' / ' . 'Keyword Phrase: ' . $keywordPhrase . ' / ' . 'Rank: ' . $googleListRank . ' / ' . 'Page: ' . $googlePage;
-	    		exit;
-	    	}
-	    		
-	    	$googleListRank++;
-	    }
-	  }
-  }
+				$iCounter++;
+				
+				$url = trim(str_replace('/url?q=', '', $url));
+				$url = substr($url, 0, strpos($url, '&sa=U&ved='));
+				
+				// DEBUG
+				//echo $googleListRank . ' ' . $googlePage . ' ' . $startPage . ' ' . $iCounter . ' ' .$url . "\n";
+					
+				$pos = strpos($url, $argv[2]);
+				
+				if(!($pos === false)) {
+					echo 'Domain: ' . $argv[2] . ' / ' . 'Keyword Phrase: ' . $keywordPhrase . ' / ' . 'Rank: ' . $googleListRank . ' / ' . 'Page: ' . $googlePage;
+					exit;
+				}
+					
+				$googleListRank++;
+			}
+		}
+	}
