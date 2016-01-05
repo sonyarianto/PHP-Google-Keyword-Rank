@@ -90,3 +90,5 @@
 			}
 		}
 	}
+
+	echo 'Domain: ' . $argv[2] . ' / ' . 'Keyword Phrase: ' . $keywordPhrase . ' / ' . 'Rank: above ' .  $googleListRank . ' / ' . 'Page: above 10';
